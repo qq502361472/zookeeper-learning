@@ -1,0 +1,63 @@
+version: '3.1'
+
+services:
+  zoo1:
+    image: zookeeper
+    restart: always
+    hostname: zoo1
+    ports:
+    - 2181:2181
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=zoo3:2888:3888;2181
+    volumes:
+      - zoo-config1:/conf
+      - zoo-data1:/data
+      - zoo-datalog1:/datalog
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - zoo-cluster
+  zoo2:
+    image: zookeeper
+    restart: always
+    hostname: zoo2
+    ports:
+    - 2182:2181
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=0.0.0.0:2888:3888;2181 server.3=zoo3:2888:3888;2181
+    volumes:
+    - zoo-config2:/conf/
+    - zoo-data2:/data
+    - zoo-datalog2:/datalog
+    - /etc/localtime:/etc/localtime:ro
+    networks:
+    - zoo-cluster
+  zoo3:
+    image: zookeeper
+    restart: always
+    hostname: zoo3
+    ports:
+    - 2183:2181
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=0.0.0.0:2888:3888;2181
+    volumes:
+    - zoo-config3:/conf/
+    - zoo-data3:/data
+    - zoo-datalog3:/datalog
+    - /etc/localtime:/etc/localtime:ro
+    networks:
+    - zoo-cluster
+volumes:
+  zoo-config1:
+  zoo-data1:
+  zoo-datalog1:
+  zoo-config2:
+  zoo-data2:
+  zoo-datalog2:
+  zoo-config3:
+  zoo-data3:
+  zoo-datalog3:
+networks:
+  zoo-cluster:
